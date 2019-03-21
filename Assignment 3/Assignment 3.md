@@ -107,11 +107,12 @@ clf_orig.fit(X_train, y_train)
 
 
 ```python
-y_pred = clf_orig.predict(X_test)
-print("Accuracy:", clf_orig.score(X_test, y_test))
+print("Accuracy on train set:", clf_orig.score(X_train, y_train))
+print("Accuracy on test set:", clf_orig.score(X_test, y_test))
 ```
 
-    Accuracy: 0.52
+    Accuracy on train set: 0.9925
+    Accuracy on test set: 0.52
 
 
 ### Training and testing on PCA-representation of data
@@ -214,10 +215,12 @@ clf_pca.fit(X_train_pca, y_train)
 
 
 ```python
-print("Accuracy:", clf_pca.score(X_test_pca, y_test))
+print("Accuracy on train set:", clf_pca.score(X_train_pca, y_train))
+print("Accuracy on test set:", clf_pca.score(X_test_pca, y_test))
 ```
 
-    Accuracy: 0.59
+    Accuracy on train set: 0.6075
+    Accuracy on test set: 0.59
 
 
 ### Training and testing on LDA-representation of data
@@ -295,20 +298,19 @@ clf_lda.fit(X_train_lda, y_train)
 
 
 ```python
-print("Accuracy:", clf_lda.score(X_test_lda, y_test))
+print("Accuracy on train set:", clf_lda.score(X_train_lda, y_train))
+print("Accuracy on test set:", clf_lda.score(X_test_lda, y_test))
 ```
 
-    Accuracy: 0.5
+    Accuracy on train set: 0.9925
+    Accuracy on test set: 0.5
 
 
 ### Conclusions
-As we can see, in order of descdending accuracy, first place is classification on PCA, then original data, and then LDA. In this case, LDA performed poorly because it only provides on discriminant component (since there are only 2 classes), meaning, although we're finding the projection that shows maximum separability, we are losing too much information about the 200x200x3 dimensional space. Thus, our classifier becomes high bias and underfits test data. When comparing the outputs of LDA and PCA, we can see that although they are different, they are actually similar when we consider that the range for each pixel is 0-255. Thus, PCA's first component has similar predictive power as LDA's only component but then PCA has more components to cover for other interesting regions, unlike LDA which is limited to only one.
+As we can see, in order of descdending accuracy, first place is classification on PCA, then original data, and then LDA. In this case, LDA performed poorly because it only provides on discriminant component (since there are only 2 classes), meaning, although we're finding the projection that shows maximum separability, we are losing too much information about the 200x200x3 dimensional space. When comparing the outputs of LDA and PCA, we can see that although they are different, they are actually similar when we consider that the range for each pixel is 0-255. Thus, PCA's first component has similar predictive power as LDA's only component but then PCA has more components to cover for other interesting regions, unlike LDA which is limited to only one. Also, LDA assumes that our data points are normally distributed whereas it is not likely the case here, for example, because shirts are mostly white (thus, we would have skewed distribution of values of pixels somewhere in the center where the shirt is).
 
-The SVM classifier performed better on PCA than on original reasons. I think, there are two reasons for this. First of all, as we can see, the SVM trained on original data does not converge (through gradient descent), meaning, that it is not in the global optimum, unlike PCA's SVM. Then, the one that has converged has a minimized loss function, thus, has higher accuracy. The second reason (theoretically speaking) is that in PCA, we reduce the dimension of the space (from 200x200x3 to 10 in this case. This way, we are able to come up with a few features that retain a good amount of variance thus not losing too much information about original data. Having fewer features means that we will less likely overfit since chance noise would be ignored when projected onto direction of maximum variance. Therefore, we should get a better accuracy on test set.
+The SVM classifier performed better on PCA than on original reasons. I think, there are two reasons for this. First of all, as we can see, the SVM trained on original data does not converge (through gradient descent), meaning, that it is not in the global optimum, unlike PCA's SVM. Then, the one that has converged has a minimized loss function, thus, has higher accuracy. The second reason (theoretically speaking) is that in PCA, we reduce the dimension of the space (from 200x200x3 to 10 in this case. This way, we are able to come up with a few features that retain a good amount of variance thus not losing too much information about original data. Having fewer features means that we will less likely overfit since chance noise would be ignored when projected onto direction of maximum variance (we can observed that train set accuracy for full-dimensional data is super high whereas for PCA it's more reserved). Therefore, we should get a better accuracy on test set.
 
 To conclude, in high dimensional problems like this, PCA, although an unsupervised algorithm, seems to be a good practice to perform before fitting a classifier because we will reduce the dimension while retaining the "interesting" features (and reduce chance noise in the data). This means, we will be able to avoid high-variance when fitting a classifier. On the other hand, in binary classificatino LDA offers at most 1 discriminant component, and it can be helpful to understand what is the factor that separates data the most (e.g., shirts tend to be white while jerseys tend to be dark color).
 
-
-```python
-
-```
+[Source code](https://github.com/Munchic/cs156/blob/master/Assignment%203.ipynb)
